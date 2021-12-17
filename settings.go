@@ -1,6 +1,7 @@
 package npc
 
 import (
+	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player/skin"
 	"github.com/go-gl/mathgl/mgl64"
 )
@@ -16,4 +17,10 @@ type Settings struct {
 	Scale      float64
 	Immobile   bool
 	Vulnerable bool
+	MainHand,
+	OffHand,
+	Helmet,
+	Chestplate,
+	Leggings,
+	Boots item.Stack
 }
