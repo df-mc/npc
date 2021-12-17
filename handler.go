@@ -8,12 +8,13 @@ import (
 	"github.com/go-gl/mathgl/mgl64"
 )
 
-// handler ...
+// handler implements the handler for an NPC entity. It manages the execution of the HandlerFunc assigned to the NPC
+// and makes sure the *world.Loader's position remains synchronised with that of the NPC.
 type handler struct {
 	player.NopHandler
 
 	l *world.Loader
-	f func(attacker *player.Player)
+	f HandlerFunc
 
 	vulnerable bool
 }
