@@ -28,7 +28,7 @@ Instead of `nil`, an `npc.HandlerFunc` may be passed to handle the NPC being hit
 players.
 
 Note that the `npc.Settings` passed initially may be overwritten by calling methods on
-the `*player.Player` returned by `npc.Create`.
+the `*player.Player` returned by `npc.Create()`.
 
 The NPC library also contains convenience functions for reading/parsing skin data from files.
-The `npc.ReadSkin` and `npc.ParseSkin` functions may be used to do so.
+The `npc.Skin()`, `npc.*Model()` and `npc.*Texture()` functions may be used to do so.
