@@ -27,10 +27,7 @@ func Create(s Settings, w *world.World, f HandlerFunc) *player.Player {
 	npc.Move(mgl64.Vec3{}, s.Yaw, s.Pitch)
 	npc.SetScale(s.Scale)
 	npc.SetHeldItems(s.MainHand, s.OffHand)
-	npc.Armour().SetBoots(s.Boots)
-	npc.Armour().SetLeggings(s.Leggings)
-	npc.Armour().SetChestplate(s.Chestplate)
-	npc.Armour().SetHelmet(s.Helmet)
+	npc.Armour().Set(s.Helmet, s.Chestplate, s.Leggings, s.Boots)
 	if s.Immobile {
 		npc.SetImmobile()
 	}

@@ -48,8 +48,8 @@ github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGX
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/df-mc/dragonfly v0.4.1 h1:3lLHn/K6VRy3iUzi1S8SzZsB4Bzh/TlEsr3Vlai+fOs=
-github.com/df-mc/dragonfly v0.4.1/go.mod h1:saPioTIQPe/rDjVCbwkPie95qBuFilmreqZJM3HylOo=
+github.com/df-mc/dragonfly v0.5.0 h1:NW+aQHzek9yRFXDfeCTXxlag29V6sX7QAA/M8RoAVXI=
+github.com/df-mc/dragonfly v0.5.0/go.mod h1:n/ZtuBD7m9RilP4alZ3B8T93ZWnGF7ZEpTJ4zbyePZw=
 github.com/df-mc/goleveldb v1.1.9/go.mod h1:+NHCup03Sci5q84APIA21z3iPZCuk6m6ABtg4nANCSk=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
@@ -143,8 +143,8 @@ github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/sandertv/go-raknet v1.10.2 h1:aVwwSOhZQND6fo6aBJbJ4TSWIpfJWoxZMY//StAk7h4=
 github.com/sandertv/go-raknet v1.10.2/go.mod h1:s1lD7LTts74R9csTeI4WlGcp6PmXAGX+DeJlQF3KMlg=
-github.com/sandertv/gophertunnel v1.17.1 h1:+GDHscrJ3LUd8fKgumsLhPni15Wty6IqEOfZLISejUE=
-github.com/sandertv/gophertunnel v1.17.1/go.mod h1:cu9ZDQVTXY1RJO/te3syrPvCeCAzKt9eB4jkSzXljTw=
+github.com/sandertv/gophertunnel v1.18.1 h1:JHULaRk83QRY9/H8wmngU7HLGIaGse2cMaYpZl4xWfM=
+github.com/sandertv/gophertunnel v1.18.1/go.mod h1:cu9ZDQVTXY1RJO/te3syrPvCeCAzKt9eB4jkSzXljTw=
 github.com/sirupsen/logrus v1.8.1/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72 h1:qLC7fQah7D6K1B0ujays3HV9gkFtllcxhzImRR7ArPQ=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
