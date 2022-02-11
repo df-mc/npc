@@ -33,12 +33,19 @@ func (h *handler) HandleHurt(ctx *event.Context, _ *float64, src damage.Source) 
 
 // HandleMove ...
 func (h *handler) HandleMove(_ *event.Context, pos mgl64.Vec3, _, _ float64) {
-	h.l.Move(pos)
+	h.syncPosition(pos)
 }
 
 // HandleTeleport ...
 func (h *handler) HandleTeleport(_ *event.Context, pos mgl64.Vec3) {
+	h.syncPosition(pos)
+}
+
+// syncPosition synchronises the position passed with the one in the world.Loader held by the handler. It ensures the
+// chunk at this new position is loaded.
+func (h *handler) syncPosition(pos mgl64.Vec3) {
 	h.l.Move(pos)
+	_ = h.l.Load(1)
 }
 
 // HandleQuit ...

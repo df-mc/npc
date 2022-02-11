@@ -32,10 +32,11 @@ func Create(s Settings, w *world.World, f HandlerFunc) *player.Player {
 		npc.SetImmobile()
 	}
 	l := world.NewLoader(1, w, world.NopViewer{})
-
-	npc.Handle(&handler{f: f, l: l, vulnerable: s.Vulnerable})
+	h := &handler{f: f, l: l, vulnerable: s.Vulnerable}
+	npc.Handle(h)
 	w.AddEntity(npc)
 
+	h.syncPosition(s.Position)
 	go syncWorld(npc, l)
 	return npc
 }
