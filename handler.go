@@ -45,7 +45,7 @@ func (h *handler) HandleTeleport(_ *event.Context, pos mgl64.Vec3) {
 // chunk at this new position is loaded.
 func (h *handler) syncPosition(pos mgl64.Vec3) {
 	h.l.Move(pos)
-	_ = h.l.Load(1)
+	h.l.Load(1)
 }
 
 // HandleQuit ...
