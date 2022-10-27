@@ -3,7 +3,7 @@ module github.com/df-mc/npc
 go 1.18
 
 require (
-	github.com/df-mc/dragonfly v0.7.0
+	github.com/df-mc/dragonfly v0.8.6
 	github.com/go-gl/mathgl v1.0.0
 )
 
@@ -12,15 +12,16 @@ require (
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/df-mc/atomic v1.10.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/muhammadmuzzammil1998/jsonc v1.0.0 // indirect
-	github.com/sandertv/go-raknet v1.10.9 // indirect
-	github.com/sandertv/gophertunnel v1.20.0 // indirect
+	github.com/sandertv/go-raknet v1.12.0 // indirect
+	github.com/sandertv/gophertunnel v1.25.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
-	golang.org/x/exp v0.0.0-20220328175248-053ad81199eb // indirect
+	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75 // indirect
 	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a // indirect
 	golang.org/x/net v0.0.0-20220418201149-a630d4f3e7a2 // indirect
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5 // indirect

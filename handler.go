@@ -1,7 +1,7 @@
 package npc
 
 import (
-	"github.com/df-mc/dragonfly/server/entity/damage"
+	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
@@ -21,8 +21,8 @@ type handler struct {
 }
 
 // HandleHurt ...
-func (h *handler) HandleHurt(ctx *event.Context, _ *float64, _ *time.Duration, src damage.Source) {
-	if src, ok := src.(damage.SourceEntityAttack); ok {
+func (h *handler) HandleHurt(ctx *event.Context, _ *float64, _ *time.Duration, src world.DamageSource) {
+	if src, ok := src.(entity.AttackDamageSource); ok {
 		if attacker, ok := src.Attacker.(*player.Player); ok {
 			h.f(attacker)
 		}
