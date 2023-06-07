@@ -32,6 +32,16 @@ func (h *handler) HandleHurt(ctx *event.Context, _ *float64, _ *time.Duration, s
 	}
 }
 
+// HandleAttackEntity ...
+func (h *handler) HandleAttackEntity(ctx *event.Context, e world.Entity, _, _ *float64, _ *bool) {
+	if attacker, ok := e.(*player.Player); ok {
+		h.f(attacker)
+	}
+	if !h.vulnerable {
+		ctx.Cancel()
+	}
+}
+
 // HandleMove ...
 func (h *handler) HandleMove(_ *event.Context, pos mgl64.Vec3, _, _ float64) {
 	h.syncPosition(pos)
