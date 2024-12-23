@@ -16,44 +16,66 @@ type HandlerFunc func(p *player.Player)
 // when the entity is interacted with.
 // Create returns the *player.Player created. This entity has been added to the world passed. It may be removed from
 // the world like any other entity by calling (*player.Player).Close.
-func Create(s Settings, w *world.World, f HandlerFunc) *player.Player {
-	if w == nil {
-		panic("world passed to npc.create must not be nil")
+func Create(s Settings, tx *world.Tx, f HandlerFunc) *player.Player {
+	if tx == nil {
+		panic("tx passed to npc.create must not be nil")
 	}
 	if f == nil {
 		f = func(*player.Player) {}
 	}
-	npc := player.New(s.Name, s.Skin, s.Position)
-	npc.Move(mgl64.Vec3{}, s.Yaw, s.Pitch)
-	npc.SetScale(s.Scale)
-	npc.SetHeldItems(s.MainHand, s.OffHand)
-	npc.Armour().Set(s.Helmet, s.Chestplate, s.Leggings, s.Boots)
-	if s.Immobile {
-		npc.SetImmobile()
+	opts := world.EntitySpawnOpts{
+		Position: s.Position,
 	}
-	l := world.NewLoader(1, w, world.NopViewer{})
-	h := &handler{f: f, l: l, vulnerable: s.Vulnerable}
-	npc.Handle(h)
-	w.AddEntity(npc)
 
-	h.syncPosition(s.Position)
+	npc := opts.New(player.Type,
+		player.Config{
+			Name: s.Name,
+		},
+	)
+
+	tx.AddEntity(npc)
+	l := world.NewLoader(1, tx.World(), world.NopViewer{})
+	h := &handler{f: f, l: l, vulnerable: s.Vulnerable}
+
+	npc.ExecWorld(func(tx *world.Tx, e world.Entity) {
+		pl := e.(*player.Player)
+		pl.Move(mgl64.Vec3{}, s.Yaw, s.Pitch)
+		pl.SetScale(s.Scale)
+		pl.SetHeldItems(s.MainHand, s.OffHand)
+		pl.Armour().Set(s.Helmet, s.Chestplate, s.Leggings, s.Boots)
+
+		if s.Immobile {
+			pl.SetImmobile()
+		}
+
+		pl.Handle(h)
+	})
+
+	h.syncPosition(tx, s.Position)
 	go syncWorld(npc, l)
-	return npc
+
+	e, ok := npc.Entity(tx)
+	if !ok {
+		panic("npc is not in a world")
+	}
+	return e.(*player.Player)
 }
 
 // syncWorld periodically synchronises the world of the world.Loader passed with a player.Player's world. It stops doing
 // so once the world returned by (*player.Player).World is nil.
-func syncWorld(npc *player.Player, l *world.Loader) {
+func syncWorld(npc *world.EntityHandle, l *world.Loader) {
 	t := time.NewTicker(time.Second / 20)
 	defer t.Stop()
 
 	for range t.C {
-		if w := npc.World(); w != l.World() {
-			if w == nil {
-				// The NPC was closed in the meantime, stop synchronising the world.
-				return
+		npc.ExecWorld(func(tx *world.Tx, e world.Entity) {
+			if w := tx.World(); w != l.World() {
+				if w == nil {
+					// The NPC was closed in the meantime, stop synchronising the world.
+					return
+				}
+				l.ChangeWorld(tx, w)
 			}
-			l.ChangeWorld(w)
-		}
+		})
 	}
 }
