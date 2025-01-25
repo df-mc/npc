@@ -11,19 +11,31 @@ import (
 type HandlerFunc func(p *player.Player)
 
 // Create creates a new NPC with the Settings passed. A world.Loader is spawned in the background which follows the
-// NPC to prevent it from despawning. Create panics if the world passed is nil.
+// NPC to prevent it from despawning. Create panics if the *world.Tx passed is nil.
 // The HandlerFunc passed handles a player interacting with the NPC. Nil may be passed to avoid calling any function
 // when the entity is interacted with.
-// Create returns the *player.Player created. This entity has been added to the world passed. It may be removed from
+// Create returns the *world.EntityHandle created. This entity has been added to the world passed. It may be removed from
 // the world like any other entity by calling (*player.Player).Close.
-func Create(s Settings, w *world.World, f HandlerFunc) *player.Player {
-	if w == nil {
-		panic("world passed to npc.create must not be nil")
+func Create(s Settings, tx *world.Tx, f HandlerFunc) *world.EntityHandle {
+	if tx == nil {
+		panic("tx passed to npc.create must not be nil")
 	}
 	if f == nil {
 		f = func(*player.Player) {}
 	}
-	npc := player.New(s.Name, s.Skin, s.Position)
+
+	opts := world.EntitySpawnOpts{
+		Position: s.Position,
+	}
+
+	ent := opts.New(player.Type, player.Config{Name: s.Name, Position: s.Position, Skin: s.Skin})
+	l := world.NewLoader(1, tx.World(), world.NopViewer{})
+
+	tx.AddEntity(ent)
+
+	e, _ := ent.Entity(tx)
+	npc := e.(*player.Player)
+
 	npc.Move(mgl64.Vec3{}, s.Yaw, s.Pitch)
 	npc.SetScale(s.Scale)
 	npc.SetHeldItems(s.MainHand, s.OffHand)
@@ -31,29 +43,31 @@ func Create(s Settings, w *world.World, f HandlerFunc) *player.Player {
 	if s.Immobile {
 		npc.SetImmobile()
 	}
-	l := world.NewLoader(1, w, world.NopViewer{})
+
 	h := &handler{f: f, l: l, vulnerable: s.Vulnerable}
 	npc.Handle(h)
-	w.AddEntity(npc)
 
-	h.syncPosition(s.Position)
-	go syncWorld(npc, l)
-	return npc
+	h.syncPosition(tx, s.Position)
+
+	go syncWorld(ent, l)
+	return ent
 }
 
 // syncWorld periodically synchronises the world of the world.Loader passed with a player.Player's world. It stops doing
 // so once the world returned by (*player.Player).World is nil.
-func syncWorld(npc *player.Player, l *world.Loader) {
+func syncWorld(npc *world.EntityHandle, l *world.Loader) {
 	t := time.NewTicker(time.Second / 20)
 	defer t.Stop()
 
 	for range t.C {
-		if w := npc.World(); w != l.World() {
-			if w == nil {
-				// The NPC was closed in the meantime, stop synchronising the world.
-				return
+		npc.ExecWorld(func(tx *world.Tx, e world.Entity) {
+			if w := tx.World(); w != l.World() {
+				if w == nil {
+					// The NPC was closed in the meantime, stop synchronising the world.
+					return
+				}
+				l.ChangeWorld(tx, w)
 			}
-			l.ChangeWorld(w)
-		}
+		})
 	}
 }
