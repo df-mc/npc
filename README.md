@@ -13,7 +13,7 @@ go get github.com/df-mc/npc
 Usage of the NPC library is simple. It relies on the `Create` method:
 
 ```go
-// var w *world.World
+// var tx *world.Tx
 
 settings := npc.Settings{
     Name: "Example NPC",
@@ -21,7 +21,7 @@ settings := npc.Settings{
     Position: mgl64.Vec3{1, 2, 3},
     Skin   ...,
 }
-p := npc.Create(settings, w, nil)
+p := npc.Create(settings, tx, nil)
 p.SwingArm()
 ```
 Instead of `nil`, an `npc.HandlerFunc` may be passed to handle the NPC being hit by other

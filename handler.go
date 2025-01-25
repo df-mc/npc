@@ -1,8 +1,8 @@
 package npc
 
 import (
+	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity"
-	"github.com/df-mc/dragonfly/server/event"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
@@ -21,7 +21,7 @@ type handler struct {
 }
 
 // HandleHurt ...
-func (h *handler) HandleHurt(ctx *event.Context, _ *float64, _ *time.Duration, src world.DamageSource) {
+func (h *handler) HandleHurt(ctx *player.Context, _ *float64, _ bool, _ *time.Duration, src world.DamageSource) {
 	if src, ok := src.(entity.AttackDamageSource); ok {
 		if attacker, ok := src.Attacker.(*player.Player); ok {
 			h.f(attacker)
@@ -33,23 +33,23 @@ func (h *handler) HandleHurt(ctx *event.Context, _ *float64, _ *time.Duration, s
 }
 
 // HandleMove ...
-func (h *handler) HandleMove(_ *event.Context, pos mgl64.Vec3, _, _ float64) {
-	h.syncPosition(pos)
+func (h *handler) HandleMove(ctx *player.Context, pos mgl64.Vec3, _ cube.Rotation) {
+	h.syncPosition(ctx.Val().Tx(), pos)
 }
 
 // HandleTeleport ...
-func (h *handler) HandleTeleport(_ *event.Context, pos mgl64.Vec3) {
-	h.syncPosition(pos)
+func (h *handler) HandleTeleport(ctx *player.Context, pos mgl64.Vec3) {
+	h.syncPosition(ctx.Val().Tx(), pos)
 }
 
 // syncPosition synchronises the position passed with the one in the world.Loader held by the handler. It ensures the
 // chunk at this new position is loaded.
-func (h *handler) syncPosition(pos mgl64.Vec3) {
-	h.l.Move(pos)
-	h.l.Load(1)
+func (h *handler) syncPosition(tx *world.Tx, pos mgl64.Vec3) {
+	h.l.Move(tx, pos)
+	h.l.Load(tx, 1)
 }
 
 // HandleQuit ...
-func (h *handler) HandleQuit() {
-	_ = h.l.Close()
+func (h *handler) HandleQuit(p *player.Player) {
+	h.l.Close(p.Tx())
 }
