@@ -14,9 +14,9 @@ type HandlerFunc func(p *player.Player)
 // NPC to prevent it from despawning. Create panics if the *world.Tx passed is nil.
 // The HandlerFunc passed handles a player interacting with the NPC. Nil may be passed to avoid calling any function
 // when the entity is interacted with.
-// Create returns the *world.EntityHandle created. This entity has been added to the world passed. It may be removed from
+// Create returns the *player.Player created. This entity has been added to the tx world passed. It may be removed from
 // the world like any other entity by calling (*player.Player).Close.
-func Create(s Settings, tx *world.Tx, f HandlerFunc) *world.EntityHandle {
+func Create(s Settings, tx *world.Tx, f HandlerFunc) *player.Player {
 	if tx == nil {
 		panic("tx passed to npc.create must not be nil")
 	}
@@ -31,9 +31,7 @@ func Create(s Settings, tx *world.Tx, f HandlerFunc) *world.EntityHandle {
 	ent := opts.New(player.Type, player.Config{Name: s.Name, Position: s.Position, Skin: s.Skin})
 	l := world.NewLoader(1, tx.World(), world.NopViewer{})
 
-	tx.AddEntity(ent)
-
-	e, _ := ent.Entity(tx)
+	e := tx.AddEntity(ent)
 	npc := e.(*player.Player)
 
 	npc.Move(mgl64.Vec3{}, s.Yaw, s.Pitch)
@@ -50,7 +48,7 @@ func Create(s Settings, tx *world.Tx, f HandlerFunc) *world.EntityHandle {
 	h.syncPosition(tx, s.Position)
 
 	go syncWorld(ent, l)
-	return ent
+	return npc
 }
 
 // syncWorld periodically synchronises the world of the world.Loader passed with a player.Player's world. It stops doing
@@ -60,14 +58,12 @@ func syncWorld(npc *world.EntityHandle, l *world.Loader) {
 	defer t.Stop()
 
 	for range t.C {
-		npc.ExecWorld(func(tx *world.Tx, e world.Entity) {
+		if !npc.ExecWorld(func(tx *world.Tx, e world.Entity) {
 			if w := tx.World(); w != l.World() {
-				if w == nil {
-					// The NPC was closed in the meantime, stop synchronising the world.
-					return
-				}
 				l.ChangeWorld(tx, w)
 			}
-		})
+		}) {
+			return
+		}
 	}
 }

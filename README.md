@@ -21,7 +21,8 @@ settings := npc.Settings{
     Position: mgl64.Vec3{1, 2, 3},
     Skin   ...,
 }
-npc.Create(settings, tx, nil)
+p := npc.Create(settings, tx, nil)
+p.SwingArm()
 ```
 Instead of `nil`, an `npc.HandlerFunc` may be passed to handle the NPC being hit by other
 players.
