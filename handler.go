@@ -1,6 +1,7 @@
 package npc
 
 import (
+	"context"
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/player"
@@ -18,6 +19,9 @@ type handler struct {
 	f HandlerFunc
 
 	vulnerable bool
+
+	cancel        context.CancelFunc
+	syncWorldDone chan struct{}
 }
 
 // HandleHurt ...
@@ -51,5 +55,9 @@ func (h *handler) syncPosition(tx *world.Tx, pos mgl64.Vec3) {
 
 // HandleQuit ...
 func (h *handler) HandleQuit(p *player.Player) {
+	if h.cancel != nil {
+		h.cancel()
+		<-h.syncWorldDone
+	}
 	h.l.Close(p.Tx())
 }

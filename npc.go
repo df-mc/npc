@@ -1,6 +1,7 @@
 package npc
 
 import (
+	"context"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
@@ -42,28 +43,37 @@ func Create(s Settings, tx *world.Tx, f HandlerFunc) *player.Player {
 		npc.SetImmobile()
 	}
 
-	h := &handler{f: f, l: l, vulnerable: s.Vulnerable}
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+
+	h := &handler{f: f, l: l, vulnerable: s.Vulnerable, cancel: cancel, syncWorldDone: done}
 	npc.Handle(h)
 
 	h.syncPosition(tx, s.Position)
 
-	go syncWorld(ent, l)
+	go syncWorld(ctx, done, ent, l)
 	return npc
 }
 
 // syncWorld periodically synchronises the world of the world.Loader passed with a player.Player's world. It stops doing
 // so once the world returned by (*player.Player).World is nil.
-func syncWorld(npc *world.EntityHandle, l *world.Loader) {
+func syncWorld(ctx context.Context, done chan struct{}, npc *world.EntityHandle, l *world.Loader) {
 	t := time.NewTicker(time.Second / 20)
 	defer t.Stop()
+	defer close(done)
 
-	for range t.C {
-		if !npc.ExecWorld(func(tx *world.Tx, e world.Entity) {
-			if w := tx.World(); w != l.World() {
-				l.ChangeWorld(tx, w)
-			}
-		}) {
+	for {
+		select {
+		case <-ctx.Done():
 			return
+		case <-t.C:
+			if !npc.ExecWorld(func(tx *world.Tx, e world.Entity) {
+				if w := tx.World(); w != l.World() {
+					l.ChangeWorld(tx, w)
+				}
+			}) {
+				return
+			}
 		}
 	}
 }
