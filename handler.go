@@ -1,12 +1,13 @@
 package npc
 
 import (
+	"time"
+
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/entity"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
-	"time"
 )
 
 // handler implements the handler for an NPC entity. It manages the execution of the HandlerFunc assigned to the NPC
@@ -34,12 +35,12 @@ func (h *handler) HandleHurt(ctx *player.Context, _ *float64, _ bool, _ *time.Du
 
 // HandleMove ...
 func (h *handler) HandleMove(ctx *player.Context, pos mgl64.Vec3, _ cube.Rotation) {
-	h.syncPosition(ctx.Val().Tx(), pos)
+	h.syncPosition(ctx.Player().Tx(), pos)
 }
 
 // HandleTeleport ...
 func (h *handler) HandleTeleport(ctx *player.Context, pos mgl64.Vec3) {
-	h.syncPosition(ctx.Val().Tx(), pos)
+	h.syncPosition(ctx.Player().Tx(), pos)
 }
 
 // syncPosition synchronises the position passed with the one in the world.Loader held by the handler. It ensures the

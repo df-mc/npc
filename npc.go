@@ -1,10 +1,11 @@
 package npc
 
 import (
+	"time"
+
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
-	"time"
 )
 
 // HandlerFunc may be passed to Create to handle a *player.Player attacking an NPC.
@@ -58,11 +59,12 @@ func syncWorld(npc *world.EntityHandle, l *world.Loader) {
 	defer t.Stop()
 
 	for range t.C {
-		if !npc.ExecWorld(func(tx *world.Tx, e world.Entity) {
+		task := npc.Do(func(tx *world.Tx, e world.Entity) {
 			if w := tx.World(); w != l.World() {
 				l.ChangeWorld(tx, w)
 			}
-		}) {
+		})
+		if task.Err() != nil {
 			return
 		}
 	}
